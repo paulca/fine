@@ -3,13 +3,15 @@ class Fine
     @routes ||= {}
   end
   
-  def self.get(route,&block)
-    self.routes[route] = block
+  def self.route(route, options = {})
+    klass, method = options[:to].split('#', 2)
+    self.routes[route] = {:class => klass, :method => method}
+  end
+  
+  def self.get(route)
+    route = self.routes[route]
+    Kernel.const_get(route[:class]).new.send(route[:method])
   end
   
   attr_accessor :body
-  
-  def initialize(route)
-    self.body = self.class.routes[route].call
-  end
 end

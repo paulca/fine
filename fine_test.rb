@@ -2,7 +2,9 @@ require 'fine'
 require 'test/unit'
 
 class FineApp < Fine
-  get "/" do
+  route "/", :to => "FineApp#index"
+  
+  def index
     "hello world"
   end
 end
@@ -10,7 +12,7 @@ end
 class FineTest < Test::Unit::TestCase
   
   def test_basic_route
-    assert_equal "hello world", FineApp.new('/').body
+    assert_equal "hello world", FineApp.get('/')
   end
   
 end
