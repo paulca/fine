@@ -1,4 +1,5 @@
 require 'fine'
+require 'erb'
 
 class Sample
   def index
