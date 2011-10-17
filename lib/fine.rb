@@ -14,4 +14,8 @@ class Fine
   end
   
   attr_accessor :body
+  
+  def self.call(env)
+    [200, {'Content-Type'=>'text/plain'}, StringIO.new(self.get(Rack::Request.new(env).env['REQUEST_PATH']))]
+  end
 end
