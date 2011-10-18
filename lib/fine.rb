@@ -4,14 +4,20 @@ class Fine
   end
   
   def self.route(route, options = {})
-    klass, method = options[:to].split('#', 2)
+    if options[:to].index('#')
+      klass, method = options[:to].split('#', 2)
+    else
+      klass = self
+      method = options[:to]
+    end
     self.routes[route] = {:class => klass, :method => method}
   end
   
   def self.get(route, params = {})
     raise "You need to set up a route for '#{route}'" unless self.routes[route]
     route = self.routes[route]
-    instance = Kernel.const_get(route[:class]).new
+    instance = route[:class].new if route[:class].respond_to?(:new)
+    instance ||= Kernel.const_get(route[:class]).new
     instance.params = params
     instance.send(route[:method])
   end
@@ -22,6 +28,6 @@ class Fine
     request = Rack::Request.new(env)
     env = request.env
     output = StringIO.new(self.get(env['REQUEST_PATH'], request.params))
-    [200, {'Content-Type'=>'text/plain'}, output]
+    [200, {'Content-Type'=>'text/html'}, output]
   end
 end
